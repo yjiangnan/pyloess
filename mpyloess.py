@@ -45,7 +45,7 @@ from numpy import array, empty, float_, fromiter, logical_not, recarray
 
 from numpy.ma import masked_array, mask_or, nomask
 
-import _lowess, _stl, _mloess
+import . import _lowess, _stl, _mloess
 
 
 #####---------------------------------------------------------------------------
@@ -791,7 +791,7 @@ Reference
             no = 0
 
     if hasattr(y,'_mask') and numpy.any(y._mask):
-        raise ValueError,"Missing values should first be filled !"
+        raise ValueError("Missing values should first be filled !")
     y = array(y, subok=True, copy=False).ravel()
     (rw,szn,trn,work) = _stl.stl(y,np,ns,nt,nl,isdeg,itdeg,ildeg,
                                  nsjump,ntjump,nljump,ni,no,)
