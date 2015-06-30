@@ -286,13 +286,13 @@ typedef int integer;
 
 void Recover(char *a, int *b)
 {
-    printf(a);
+    printf("%s", a);
     exit(1);
 }
 
 void Warning(char *a, int *b)
 {
-    printf(a);
+    printf("%s", a);
 }
 
 /*  d1mach may be replaced by Fortran code:
@@ -313,4 +313,3 @@ switch(*i){
     default: Recover("Invalid argument to d1mach()", 0L);
     }
 }
-
