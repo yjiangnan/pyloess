@@ -21,13 +21,16 @@ def configuration(parent_package='',top_path=None):
                          sources=[join('src', 'f_stl.pyf'),
                                   join('src', 'stl.f')],
                          )
+
     # Configuration of LOESS
-    f_sources = ('loessf.f', 'linpack_lite.f')
-    confgr.add_library('floess',
-                       sources = [join('src',x) for x in f_sources])
     blas_info = get_info('blas_opt')
     build_info = {}
     dict_append(build_info, **blas_info)
+
+    f_sources = ('loessf.f', 'linpack_lite.f')
+    confgr.add_library('floess',
+                       sources = [join('src',x) for x in f_sources])
+
     dict_append(build_info, libraries=['floess'])
     c_sources = ['loess.c', 'loessc.c', 'misc.c', 'predict.c',]
     confgr.add_extension('_loess',
