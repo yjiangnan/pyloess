@@ -5,6 +5,7 @@ __revision__ = "$Revision$"
 __date__     = '$Date$'
 
 import os
+import pprint
 from os.path import join
 
 def configuration(parent_package='',top_path=None):
@@ -26,6 +27,7 @@ def configuration(parent_package='',top_path=None):
     blas_info = get_info('blas_opt')
     build_info = {}
     dict_append(build_info, **blas_info)
+    pprint.pprint(build_info)
 
     f_sources = ('loessf.f', 'linpack_lite.f')
     confgr.add_library('floess',
