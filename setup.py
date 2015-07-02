@@ -5,7 +5,6 @@ __revision__ = "$Revision$"
 __date__     = '$Date$'
 
 import os
-import pprint
 from os.path import join
 
 def configuration(parent_package='',top_path=None):
@@ -22,17 +21,18 @@ def configuration(parent_package='',top_path=None):
                          sources=[join('src', 'f_stl.pyf'),
                                   join('src', 'stl.f')],
                          )
-
     # Configuration of LOESS
+    build_info = {
+        'f2py_options': ['--verbose', '-L/usr/lib', '-lblas']
+    }
+    f_sources = ('loessf.f', 'linpack_lite.f')
+    confgr.add_library('floess',
+                       sources = [join('src',x) for x in f_sources],
+                       **build_info)
+
     blas_info = get_info('blas_opt')
     build_info = {}
     dict_append(build_info, **blas_info)
-    pprint.pprint(build_info)
-
-    f_sources = ('loessf.f', 'linpack_lite.f')
-    confgr.add_library('floess',
-                       sources = [join('src',x) for x in f_sources])
-
     dict_append(build_info, libraries=['floess'])
     c_sources = ['loess.c', 'loessc.c', 'misc.c', 'predict.c',]
     confgr.add_extension('_loess',
