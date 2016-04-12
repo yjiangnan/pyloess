@@ -365,8 +365,8 @@ References
 #####---------------------------------------------------------------------------
 #--- --- STL ---
 #####---------------------------------------------------------------------------
-def stl(y, np=12, ns=7, nt=None, nl=13, isdeg=1, itdeg=1, ildeg=1,
-        nsjump=None,ntjump=None,nljump=None, robust=True, ni=None,no=None):
+def stl(y, np=12, ns=7, nt=None, nl=None, isdeg=1, itdeg=1, ildeg=1,
+        nsjump=None, ntjump=None, nljump=None, robust=True, ni=None, no=None):
     """Decomposes a time series into seasonal and trend  components.
 
 :Parameters:
@@ -420,7 +420,7 @@ def stl(y, np=12, ns=7, nt=None, nl=13, isdeg=1, itdeg=1, ildeg=1,
         The value of ni should be a positive integer.
         See the next argument for advice on the  choice of ni.
         If ni is None, ni is set to 1 for robust fitting, to 5 otherwise.
-    no : Integer *[0]*
+    no : Integer *[None]*
         Number of iterations of robust fitting. The value of no should
         be a nonnegative integer. If the data are well behaved without
         outliers, then robustness iterations are not needed. In this case
