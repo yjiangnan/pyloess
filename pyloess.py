@@ -478,6 +478,22 @@ Reference
     if hasattr(y,'_mask') and numpy.any(y._mask):
         raise ValueError,"Missing values should first be filled !"
     y = array(y, subok=True, copy=False).ravel()
+
+    f = open('/tmp/stl.log', 'w')
+    f.write("ni = %d\n" % ni)
+    f.write("no = %d\n" % no)
+    f.write("np = %d\n" % np)
+    f.write("ns = %d\n" % ns)
+    f.write("nt = %d\n" % nt)
+    f.write("nl = %d\n" % nl)
+    f.write("isdeg = %d\n" % isdeg)
+    f.write("itdeg = %d\n" % itdeg)
+    f.write("ildeg = %d\n" % ildeg)
+    f.write("nsjump = %d\n" % nsjump)
+    f.write("ntjump = %d\n" % ntjump)
+    f.write("nljump = %d\n" % nljump)
+    f.close()
+
     (rw,szn,trn,work) = _stl.stl(y,np,ns,nt,nl,isdeg,itdeg,ildeg,
                                  nsjump,ntjump,nljump,ni,no,)
     dtyp = [('trend', float_), ('seasonal', float_),

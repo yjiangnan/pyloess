@@ -5,6 +5,7 @@
       integer newns, newnt, newnl, newnp
       double precision y(n), rw(n), season(n), trend(n), work(n+2*np,5)
       logical userw
+      write(*,*) "LOGGING STL CALL, ARRAY SIZE ", n
       userw = .false.
       k = 0
       do 23000 i = 1,n
@@ -46,10 +47,10 @@
       end
       
       
-      subroutine ess(y,n,len,ideg,njump,userw,rw,ys,res)
+      subroutine ess(y,n,len,ideg,njump,userw,rw,ys,res,debug)
       integer n, len, ideg, njump, newnj, nleft, nright, nsh, k, i, j
       double precision y(n), rw(n), ys(n), res(n), delta
-      logical ok, userw
+      logical ok, userw, debug
       if(.not.(n .lt. 2))goto 23019
       ys(1) = y(1)
       return
@@ -59,7 +60,8 @@
       nleft = 1
       nright = n
       do 23023 i = 1,n,newnj 
-      call est(y,n,len,ideg,dble(i),ys(i),nleft,nright,res,userw,rw,ok)
+         call est(y,n,len,ideg,dble(i),ys(i),nleft,nright,res,userw,rw,
+     &           ok,debug)
       if(.not.( .not. ok))goto 23025
       ys(i) = y(i)
 23025 continue
@@ -75,7 +77,8 @@
       nleft = nleft+1
       nright = nright+1
 23031 continue
-      call est(y,n,len,ideg,dble(i),ys(i),nleft,nright,res,userw,rw,ok)
+      call est(y,n,len,ideg,dble(i),ys(i),nleft,nright,res,userw,rw,
+     &         ok,debug)
       if(.not.( .not. ok))goto 23033
       ys(i) = y(i)
 23033 continue
@@ -98,7 +101,8 @@
       nright = len+i-nsh
 23040 continue
 23038 continue
-      call est(y,n,len,ideg,dble(i),ys(i),nleft,nright,res,userw,rw,ok)
+      call est(y,n,len,ideg,dble(i),ys(i),nleft,nright,res,userw,rw,
+     &         ok,debug)
       if(.not.( .not. ok))goto 23041
       ys(i) = y(i)
 23041 continue
@@ -114,7 +118,8 @@
 23045 continue
       k = ((n-1)/newnj)*newnj+1
       if(.not.(k .ne. n))goto 23049
-      call est(y,n,len,ideg,dble(n),ys(n),nleft,nright,res,userw,rw,ok)
+      call est(y,n,len,ideg,dble(n),ys(n),nleft,nright,res,userw,rw,
+     &         ok,debug)
       if(.not.( .not. ok))goto 23051
       ys(n) = y(n)
 23051 continue
@@ -130,11 +135,15 @@
       end
       
       
-      subroutine est(y,n,len,ideg,xs,ys,nleft,nright,w,userw,rw,ok)
+      subroutine est(y,n,len,ideg,xs,ys,nleft,nright,w,userw,rw,
+     &ok,debug)
       integer n, len, ideg, nleft, nright, j
       double precision y(n), w(n), rw(n), xs, ys, range, h, h1, h9, a, 
      &b, c, r
-      logical userw,ok
+      logical userw,ok,debug
+      if (.not.(debug))goto 9999
+      write(6,*) "left = ", nleft, "right = ", nright
+ 9999 continue
       range = dble(n)-dble(1)
       h = max(xs-dble(nleft),dble(nright)-xs)
       if(.not.(len .gt. n))goto 23057
@@ -160,6 +169,7 @@
 23061 continue
 23059 continue
       if(.not.(a .le. 0.D0))goto 23067
+      write(6,*) "Sum of weights <= 0 - Extrapolation Failed!"
       ok = .false.
       goto 23068
 23067 continue
@@ -239,15 +249,67 @@
       call ss(work(1,1),n,np,ns,isdeg,nsjump,userw,rw,work(1,2),work(1,
      &3),work(1,4),work(1,5),season)
       call fts(work(1,2),n+2*np,np,work(1,3),work(1,1))
+
       call ess(work(1,3),n,nl,ildeg,nljump,.false.,work(1,4),work(1,1),
-     &work(1,5))
+     &work(1,5), .false.)
+C     
+C     Dump some debugging info to STDOUT
+C     vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv       
+      write(6, *) "STL: After moving averages and lowpass loess....."
+      do 2333 m = 1, n
+         write(6, 2330) m, work(m,1)
+ 2333 continue
+      
+ 2330 format("lowpass(",I3,") = ", e22.15)
+C     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C     Dump Code Done
+C
       do 23093 i = 1,n
       season(i) = work(np+i,2)-work(i,1)
 23093 continue
+
+C     
+C     Dump some debugging info to STDOUT
+C     vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv       
+      write(6, *) "STL: New seasonal....."
+      do 2533 m = 1, n
+         write(6, 2530) m, season(m)
+ 2533 continue
+      
+ 2530 format("seasonal(",I3,") = ", e22.15)
+C     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C     Dump Code Done
+C
+      
       do 23095 i = 1,n
       work(i,1) = y(i)-season(i)
 23095 continue
-      call ess(work(1,1),n,nt,itdeg,ntjump,userw,rw,trend,work(1,3))
+C     
+C     Dump some debugging info to STDOUT
+C     vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv       
+      write(6, *) "STL: Un-smoothed trend....."
+      do 2633 m = 1, n
+         write(6, 2630) m, work(m,1)
+ 2633 continue
+      
+ 2630 format("trend0(",I3,") = ", e22.15)
+C     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C     Dump Code Done
+C
+      call ess(work(1,1),n,nt,itdeg,ntjump,userw,rw,trend,work(1,3),
+     &         .true.)
+C     
+C     Dump some debugging info to STDOUT
+C     vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv       
+      write(6, *) "STL: Smoothed trend....."
+      do 2433 m = 1, n
+         write(6, 2430) m, trend(m)
+ 2433 continue
+      
+ 2430 format("trend(",I3,") = ", e22.15)
+C     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C     Dump Code Done
+C
 23089 continue
       return
       end
@@ -291,36 +353,74 @@
       logical userw,ok
       j=1
 23105 if(.not.(j .le. np))goto 23107
+      write(6,*) "subroutine ss: j = ", j
       k = (n-j)/np+1
       do 23108 i = 1,k
-      work1(i) = y((i-1)*np+j)
+         work1(i) = y((i-1)*np+j)
 23108 continue
       if(.not.(userw))goto 23110
       do 23112 i = 1,k
       work3(i) = rw((i-1)*np+j)
 23112 continue
 23110 continue
-      call ess(work1,k,ns,isdeg,nsjump,userw,work3,work2(2),work4)
+      call ess(work1,k,ns,isdeg,nsjump,userw,work3,work2(2),work4,
+     &         .false.)
       xs = 0.D0
       nright = min0(ns,k)
+      write(6,*) "Left extrap (l,r) = (", 1, ",", nright, ")"
       call est(work1,k,ns,isdeg,xs,work2(1),1,nright,work4,userw,work3,
-     &ok)
+     &         ok, .true.)
       if(.not.( .not. ok))goto 23114
+      write(6,*) "SS Left Endpoint Extrapolation Failed - using work2(1)
+     & = work2(2)"
       work2(1) = work2(2)
 23114 continue
       xs = dble(k+1)
       nleft = max0(1,k-ns+1)
+      write(6,*) "Left extrap (l,r) = (", nleft, ",", k, ")"
       call est(work1,k,ns,isdeg,xs,work2(k+2),nleft,k,work4,userw,work3,
-     &ok)
+     &         ok, .true.)
       if(.not.( .not. ok))goto 23116
+      write(6,*) "SS Right Endpoint Extrapolation Failed - using
+     & work2(k+2) = work2(k+1)"
       work2(k+2) = work2(k+1)
 23116 continue
       do 23118 m = 1,k+2
-      season((m-1)*np+j) = work2(m)
+         season((m-1)*np+j) = work2(m)
 23118 continue
-       j=j+1
+C     
+C     Dump some debugging info to STDOUT
+C     vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv 
+      write(6, 2220) 0, work2(1)
+
+      do 2222 m = 1, k
+         write(6, 2221) m, work1(m), m, work2(m+1)
+ 2222 continue
+
+      write(6, 2220) (k+1), work2(k+2)
+
+ 2220 format("                                 smoothed(",I2,") = ",
+     >       e22.15)
+ 2221 format(" y(", I2, ") = ", e22.15,
+     >       ", smoothed(", I2, ") = ", e22.15)
+C     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C     Dump Code Done
+C      
+      j=j+1
       goto 23105
 23107 continue
+C     
+C     Dump some debugging info to STDOUT
+C     vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv       
+      write(6, *) "STL: Re-merged extended seasonal component"
+      do 2233 m = 1, n + 2*np
+         write(6, 2230) m, season(m)
+ 2233 continue
+      
+ 2230 format("seasonal(",I3,") = ", e22.15)
+C     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C     Dump Code Done
+C    
       return
       end
       
