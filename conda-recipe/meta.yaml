@@ -1,0 +1,26 @@
+package:
+  name: pyloess
+  version: "0.1.0"
+
+source:
+  md5: 849b543f900891d5748c2dca80833079251dd39c
+  git_url: https://github.com/tdhopper/pyloess
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - numpy
+    - gcc
+
+  run:
+    - python
+
+test:
+  imports:
+    - pyloess
+
+about:
+  home: https://github.com/tdhopper/pyloess
+  license: MIT
+  license_file: LICENSE.txt
