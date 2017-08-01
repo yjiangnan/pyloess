@@ -3,7 +3,7 @@ package:
   version: "0.1.0"
 
 source:
-  md5: 849b543f900891d5748c2dca80833079251dd39c
+  md5: 5be00955378999491f162d69e070d0dbbb6c7191
   git_url: https://github.com/tdhopper/pyloess
 
 requirements:
