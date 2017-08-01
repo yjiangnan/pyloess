@@ -45,7 +45,7 @@ from numpy import array, empty, float_, fromiter, logical_not, recarray
 
 from numpy.ma import masked_array, mask_or, nomask
 
-import . import _lowess, _stl, _mloess
+from . import _lowess, _stl, _mloess
 
 
 #####---------------------------------------------------------------------------
