@@ -59,5 +59,5 @@ print madeup.model
 
 if 1:
     for com in com_example:
-        print com
+        print(com)
         exec(com)
