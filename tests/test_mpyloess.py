@@ -249,7 +249,7 @@ class TestLoess2D(TestCase):
         except ValueError:
             pass
         else:
-            raise AssertionError,"The test should have failed"
+            raise AssertionError("The test should have failed")
     #
     def test_2d_pred_stderr(self):
         "2D prediction - w/ stderr"

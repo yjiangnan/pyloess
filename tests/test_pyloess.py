@@ -231,7 +231,7 @@ class TestLoess2d(TestCase):
         except ValueError:
             pass
         else:
-            raise AssertionError,"The test should have failed"
+            raise AssertionError("The test should have failed")
     #
     def test_2d_pred_stderr(self):
         "2D prediction - w/ stderr"
@@ -376,7 +376,7 @@ class TestLoessGas(TestCase):
                           gas.predict, gas.predicted.values, stderror=False)
         # But this one should not ..........
         gas.predict(gas_fit_E, stderror=False)
-        print "OK"
+        print("OK")
 
 
 
