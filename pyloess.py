@@ -478,9 +478,7 @@ Reference
     if hasattr(y,'_mask') and numpy.any(y._mask):
         raise ValueError("Missing values should first be filled !")
     y = array(y, subok=True, copy=False).ravel()
-    (rw,szn,trn,work) = _stl.s
-
-    tl(y,np,ns,nt,nl,isdeg,itdeg,ildeg,
+    (rw,szn,trn,work) = _stl.stl(y,np,ns,nt,nl,isdeg,itdeg,ildeg,
                                  nsjump,ntjump,nljump,ni,no,)
     dtyp = [('trend', float_), ('seasonal', float_),
             ('residuals', float_), ('weights', float_)]
