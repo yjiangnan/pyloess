@@ -7,6 +7,9 @@
 * Activate environment: `$ source activate pyloess`
 * Install: `$ python setup.py install`
 
+## Or, install with pip3 and git
+sudo pip3 install git+https://github.com/yjiangnan/pyloess.git
+
 ### From original readme:
 
 #### LOWESS
