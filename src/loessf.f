@@ -212,7 +212,7 @@ C     l2fit,l2tr computational kernel
      +cond,sing,sigma,u,e,dgamma,qraux,work,tol,dd,tdeg,cdeg,s)
       integer column,d,dd,execnt,i,i3,i9,info,inorm2,j,jj,jpvt,k,kernel,
      +n,nf,od,sing,tdeg
-      integer cdeg(8),psi(n)
+      integer cdeg(8),psi(n),idm
       double precision machep,f,i1,i10,i2,i4,i5,i6,i7,i8,rcond,rho,scal,
      +tol
       double precision g(15),sigma(15),u(15,15),e(15,15),b(nf,k),colnor(
@@ -269,7 +269,8 @@ c     compute neighborhood weights
             w(i3)=dsqrt(rw(psi(i3))*(1-w(i3)**3)**3)
     8    continue
       end if
-      if(dabs(w(idamax(nf,w,1))).eq.0)then
+      idm = idamax(nf,w,1)
+      if(dabs(w(idm)).eq.0)then
          call ehg184('at ',q,dd,1)
          call ehg184('radius ',rho,1,1)
          if(.not..false.)then
@@ -1375,6 +1376,7 @@ c     l2fit with trace(L)
     8    continue
          call ehg127(q,n,d,nf,f,x,psi,y,rw,kernel,k,dist,eta,b,od,w,rcon
      +d,sing,sigma,u,e,DGAMMA,qraux,work,tol,dd,tdeg,cdeg,s(0,l))
+
          if(trl.ne.0)then
 c           invert $psi$
             do 9 i5=1,n
@@ -1493,8 +1495,8 @@ c           $Lf sub {:,l,:} = V SIGMA sup {+} U sup T Q sup T W$
 C----------------------------------------------------------------------C
       subroutine dqrdc(x,ldx,n,p,qraux,jpvt,work,job)
       integer ldx,n,p,job
-      integer jpvt(1)
-      double precision x(ldx,1),qraux(1),work(1)
+      integer jpvt(p)
+      double precision x(ldx,p),qraux(p),work(p)
 c
 c     dqrdc uses householder transformations to compute the qr
 c     factorization of an n by p matrix x.  column pivoting
@@ -1705,8 +1707,8 @@ c
 c     finds the index of element having max. absolute value.
 c     jack dongarra, linpack, 3/11/78.
 c
-      double precision dx(1),dmax
       integer i,incx,ix,n
+      double precision dx(n),dmax
 c
       idamax = 0
       if( n .lt. 1 ) return
@@ -1743,7 +1745,7 @@ C     build kd tree
       subroutine lowesb(xx,yy,ww,diagl,infl,iv,liv,lv,wv)
       logical infl,setlf
       integer execnt
-      integer iv(*)
+      integer iv(*), r1, r2
       DOUBLE PRECISION trl
       DOUBLE PRECISION diagl(*),wv(*),ww(*),xx(*),yy(*)
       external ehg131,ehg182,ehg183
