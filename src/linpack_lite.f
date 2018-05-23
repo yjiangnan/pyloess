@@ -1,7 +1,7 @@
       subroutine dqrsl(x,ldx,n,k,qraux,y,qy,qty,b,rsd,xb,job,info)
       integer ldx,n,k,job,info
-      double precision x(ldx,1),qraux(1),y(1),qy(1),qty(1),b(1),rsd(1),
-     *                 xb(1)
+      double precision x(ldx,k),qraux(k),y(n),qy(n),qty(n),b(k),rsd(n),
+     *                 xb(n)
 c
 c     dqrsl applies the output of dqrdc to compute coordinate
 c     transformations, projections, and least squares solutions.
@@ -275,7 +275,7 @@ c
 c......................................................................
       subroutine dsvdc(x,ldx,n,p,s,e,u,ldu,v,ldv,work,job,info)
       integer ldx,n,p,ldu,ldv,job,info
-      double precision x(ldx,1),s(1),e(1),u(ldu,1),v(ldv,1),work(1)
+      double precision x(ldx,p),s(p),e(p),u(ldu,p),v(ldv,p),work(n)
 c
 c
 c     dsvdc is a subroutine to reduce a double precision nxp matrix x
